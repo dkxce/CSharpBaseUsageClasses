@@ -23,3 +23,5 @@ translit.cs - Rus <--> Eng Translit
 MruList.cs - Menu MRU List
 
 wGet.cs - HttpWGetRequest with wget.exe
+
+wGet_and_cUrl.cs - HttpWGet & HttpCGEtRequest with wget.exe & curl.exe
