@@ -21,3 +21,5 @@ XMLSaved.cs - Basic Class for XML Serialization
 translit.cs - Rus <--> Eng Translit
 
 MruList.cs - Menu MRU List
+
+wGet.cs - HttpWGetRequest with wget.exe
