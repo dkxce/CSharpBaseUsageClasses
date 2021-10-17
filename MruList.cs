@@ -5,12 +5,10 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
-namespace KMZ_Viewer
+namespace KMZRebuilder
 {
-    public class MruPathList
+    public class MruList
     {
-        private bool isDirList = false;
-
         private string MRUListSavedFileName;
         private int MRUFilesCount;
         private List<FileInfo> MRUFilesInfos;
@@ -26,32 +24,10 @@ namespace KMZ_Viewer
 
         public int Count { get { return MRUFilesInfos.Count; } }
 
-        // Constructors
-        #region Constructors
-        public MruPathList(string MRUFileName, ToolStripMenuItem menu)
-        {
-            this.Init(MRUFileName, menu, 10, false);
-        }
-        public MruPathList(string MRUFileName, ToolStripMenuItem menu, int num_files)
-        {
-            this.Init(MRUFileName, menu, num_files, false);
-        }
-        public MruPathList(string MRUFileName, ToolStripMenuItem menu, bool isDirList)
-        {
-            this.Init(MRUFileName, menu, 10, isDirList);
-        }
-        public MruPathList(string MRUFileName, ToolStripMenuItem menu, int num_files, bool isDirList)
-        {
-            this.Init(MRUFileName, menu, num_files, isDirList);
-        }
-        #endregion Constructors
-
-        // Init
-        private void Init(string MRUFileName, ToolStripMenuItem menu, int num_files, bool isDirList)
+        // Constructor.
+        public MruList(string MRUFileName, ToolStripMenuItem menu, int num_files)
         {
             this.MRUListSavedFileName = MRUFileName;
-            this.isDirList = isDirList;
-
             MyMenu = menu;
             MRUFilesCount = num_files;
             MRUFilesInfos = new List<FileInfo>();
@@ -86,20 +62,11 @@ namespace KMZ_Viewer
             StreamReader sr = new StreamReader(fs, System.Text.Encoding.GetEncoding(1251));
             while (!sr.EndOfStream)
             {
-                string fullpath = sr.ReadLine();
-                if (String.IsNullOrEmpty(fullpath)) continue;
-                if (fullpath.StartsWith("#")) continue;
-                if (fullpath.StartsWith("@")) continue;
-                if (!isDirList)
-                {
-                    if (File.Exists(fullpath))
-                        MRUFilesInfos.Add(new FileInfo(fullpath));
-                }
-                else
-                {
-                    if (Directory.Exists(fullpath))
-                        MRUFilesInfos.Add(new FileInfo(fullpath));
-                };
+                string filename = sr.ReadLine();
+                if (File.Exists(filename))
+                    MRUFilesInfos.Add(new FileInfo(filename));
+                else if (Directory.Exists(filename))
+                        MRUFilesInfos.Add(new FileInfo(filename));
                         
             };
             sr.Close();
@@ -113,11 +80,6 @@ namespace KMZ_Viewer
             if (filemru == null) return;
             FileStream fs = new FileStream(filemru, FileMode.Create, FileAccess.Write);
             StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.GetEncoding(1251));
-            sw.WriteLine("#");
-            sw.WriteLine("# MRU Path List");
-            sw.WriteLine("#");
-            sw.WriteLine("# One path per line");
-            sw.WriteLine("#");
             foreach (FileInfo file_info in MRUFilesInfos)
                 sw.WriteLine(file_info.FullName);
             sw.Close();
@@ -166,28 +128,15 @@ namespace KMZ_Viewer
             SaveFiles();
         }
 
-        public delegate string FormatMenuItemTextEvent(int index, FileInfo FileInfo, ref System.Drawing.Color TextColor);
-        public event FormatMenuItemTextEvent FormatMenuItem;
-
         // Display the files in the menu items.
         private void ShowFiles()
         {
             Separator.Visible = (MRUFilesInfos.Count > 0);
             for (int i = 0; i < MRUFilesInfos.Count; i++)
             {
-                string mit = string.Format("&{0}: `{1}`", i+1, MRUFilesInfos[i].Name);
-                mit +=  " at .. " + MRUFilesInfos[i].FullName.Remove(MRUFilesInfos[i].FullName.Length - MRUFilesInfos[i].Name.Length);
-                while (mit.Length > 90) mit = mit.Remove(mit.IndexOf("` at .. ") + 8, 1);
-
-                if (FormatMenuItem != null)
-                {
-                    System.Drawing.Color color = MenuItems[i].ForeColor = System.Drawing.Color.Black;
-                    string MIT = FormatMenuItem(i + 1, MRUFilesInfos[i], ref color);
-                    mit = String.IsNullOrEmpty(MIT) ? mit : MIT;
-                    MenuItems[i].ForeColor = color;
-                };
-
-                MenuItems[i].Text = mit;                
+                string name = "`"+MRUFilesInfos[i].Name + "` at .. " + MRUFilesInfos[i].FullName.Remove(MRUFilesInfos[i].FullName.Length-MRUFilesInfos[i].Name.Length);
+                while (name.Length > 90) name = name.Remove(name.IndexOf("` at .. ") + 8, 1);
+                MenuItems[i].Text = string.Format("&{0} {1}", i + 1, name);
                 MenuItems[i].Visible = true;
                 MenuItems[i].Tag = MRUFilesInfos[i];
                 MenuItems[i].Click -= File_Click;
@@ -198,11 +147,6 @@ namespace KMZ_Viewer
                 MenuItems[i].Visible = false;
                 MenuItems[i].Click -= File_Click;
             }
-        }
-
-        public void UpdateNames()
-        {
-            ShowFiles();
         }
 
         // The user selected a file from the menu.
