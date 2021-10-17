@@ -4,6 +4,8 @@ FileAss.cs - File Assosiations
 
 InputBox.cs - Input Dialogs such as InputText/InputDigit/InputDate
 
+MruList.cs - MRU File List Menu
+
 MyBitConverter.cs - var <--> bit/byte array
 
 MyUBitConverter.cs.cs - var <--> bit/byte array
