@@ -1,5 +1,7 @@
 # CSharp Base Usage Classes
 
+DBFSharp.cs - DBF Read/Write
+
 FileAss.cs - File Assosiations
 
 InputBox.cs - Input Dialogs such as InputText/InputDigit/InputDate
