@@ -14,6 +14,7 @@ namespace DBFSharp
         private const byte MAIN_HEADER_SIZE = 32;
         private const byte FIELD_INFO_SIZE = 32;
 
+        private bool _tenHeaderMode = true;
         private bool header_exists = false;
         private string filename;
         private uint records = 0;
@@ -22,6 +23,8 @@ namespace DBFSharp
         private FieldInfos _FieldInfos = new FieldInfos();
         public CodePageList CodePages = new CodePageList();
         private MyBitConverter bc = new MyBitConverter(true);
+
+        public bool ShortenFieldNameMode { get { return _tenHeaderMode; } set { _tenHeaderMode = value; } }
 
         public DBFFile(string fileName) : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite)
         {
@@ -223,9 +226,10 @@ namespace DBFSharp
             fields.ReIndex();
             for (int i = 0; i < fields.Count; i++)
             {
-                buff = fields[i].BName(_cp.Encoding);
+                buff = fields[i].BName(_cp.Encoding);                
                 if (fields[i].GName.Length > 11)
                     buff[10] = (byte)(0x41 + (mhl++));
+                if(_tenHeaderMode) buff[10] = 0;
                 this.Write(buff, 0, buff.Length);        // 0 - Field Name                
                 buff = new byte[] { (byte)fields[i].FType };
                 this.Write(buff, 0, buff.Length);        // 11 - Field Type
