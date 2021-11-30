@@ -18,6 +18,7 @@ namespace DBFSharp
         private bool header_exists = false;
         private string filename;
         private uint records = 0;
+        private uint _header_space = 0;
 
         private CodePageSet _cp = CodePageSet.Default;
         private FieldInfos _FieldInfos = new FieldInfos();
@@ -95,6 +96,16 @@ namespace DBFSharp
         }
 
         public ushort HeaderSize
+        {
+            get
+            {
+                if (_FieldInfos == null) return 0;
+                if (_FieldInfos.Count == 0) return 0;
+                return (ushort)(_FieldInfos.Count * FIELD_INFO_SIZE + MAIN_HEADER_SIZE + 1 + _header_space);
+            }
+        }
+
+        private ushort StdHeaderSize
         {
             get
             {
@@ -179,10 +190,11 @@ namespace DBFSharp
                 byte dpnt = (byte)this.ReadByte();
                 buff = new byte[14];
                 this.Read(buff, 0, buff.Length);
-                FieldInfo fi = new FieldInfo(fName, fsize, (FieldType)ft);
+                FieldInfo fi = new FieldInfo(fName, fsize, dpnt, (FieldType)ft);
                 fi.offset = (ushort)offset;
                 _FieldInfos.Add(fi);
             };
+            this._header_space = (uint)hdr_size - this.StdHeaderSize;
             this.Position = hdr_size;
             header_exists = true;
         }
@@ -282,8 +294,9 @@ namespace DBFSharp
                         def[x] = (byte)' ';                    
                     if (_FieldInfos[i].FValue != null)
                     {
-                        string nf = "{0,-10}";
-                        if (_FieldInfos[i].FDecimalPoint > 0) { nf = "{0,-10:0."; for (int x = 0; x < _FieldInfos[i].FDecimalPoint; x++) nf += "0"; nf += "}"; };
+                        string ddd = _FieldInfos[i].FLength.ToString();
+                        string nf = "{0,-" + ddd + "}";
+                        if (_FieldInfos[i].FDecimalPoint > 0) { nf = "{0,-" + ddd + ":0."; for (int x = 0; x < _FieldInfos[i].FDecimalPoint; x++) nf += "0"; nf += "}"; };
                         byte[] buff = _cp.Encoding.GetBytes(String.Format(System.Globalization.CultureInfo.InvariantCulture,nf, _FieldInfos[i].FValue));
                         if (buff.Length > def.Length)
                             throw new Exception("Numeric Value is too large: " + _FieldInfos[i].FValue.ToString());
@@ -810,6 +823,7 @@ namespace DBFSharp
             this.Add(136, 00857, "Turkish OEM");
             this.Add(001, 00437, "US MS-DOS");
             this.Add(088, 01252, "Western European ANSI");
+            this.Add(255, 01251, "Default Unknown");
         }
 
         private void Add(byte headerCode, int codePage, string codeName)
