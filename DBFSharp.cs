@@ -370,7 +370,7 @@ namespace DBFSharp
 
         public uint WriteRecord(Dictionary<string, object> record)
         {
-            long pos = this.HeaderSize + this.records * this.RecordSize;
+            long pos = (long)this.HeaderSize + (long)this.records * (long)this.RecordSize;
             bool res = WriteData(record, pos);
             if (res) return this.records++;
             return 0;
@@ -392,7 +392,7 @@ namespace DBFSharp
 
             uint tmpi = index - 1;
             if (tmpi > this.records) return 0;
-            long pos = this.HeaderSize + tmpi * this.RecordSize;
+            long pos = (long)this.HeaderSize + (long)tmpi * (long)this.RecordSize;
             bool res = WriteData(record, pos);
             if (res) return tmpi == this.records ? ++this.records : index;
             return 0;
@@ -415,7 +415,7 @@ namespace DBFSharp
             if (position < hs) return 0;
             if (position > this.Length) return 0;
             uint index = 1;
-            for (long i = hs; i < this.Length; i += RecordSize, index++)
+            for (long i = hs; i < this.Length; i += (long)RecordSize, index++)
             {
                 if (position == i) return WriteRecord(record, index);
                 if (position < i) break;
@@ -538,7 +538,7 @@ namespace DBFSharp
         public override void Close()
         {            
             WriteRecordsCount();
-            this.Position = this.HeaderSize + this.records * this.RecordSize;
+            this.Position = (long)this.HeaderSize + (long)this.records * (long)this.RecordSize;
             WriteByte(26); // TERMINAL BYTE
             base.Close();
         }
