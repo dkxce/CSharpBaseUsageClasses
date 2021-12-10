@@ -509,6 +509,13 @@ namespace DBFSharp
             this.Position = (long)this.HeaderSize + (long)tmpi * (long)this.RecordSize;
             return ReadData();
         }
+		
+		public Dictionary<string, object> ReadNext()
+        {
+            if (records == 0) return null;            
+            if(this.Position < this.HeaderSize) this.Position = (long)this.HeaderSize;
+            return ReadData();
+        }
 
         public System.Collections.Generic.IEnumerable<Dictionary<string, object>> ReadAllRecords()
         {
