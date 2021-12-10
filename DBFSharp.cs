@@ -506,7 +506,7 @@ namespace DBFSharp
             uint tmpi = index - 1;
             if (tmpi > this.records) return null;
 
-            this.Position = this.HeaderSize + tmpi * this.RecordSize;
+            this.Position = (long)this.HeaderSize + (long)tmpi * (long)this.RecordSize;
             return ReadData();
         }
 
