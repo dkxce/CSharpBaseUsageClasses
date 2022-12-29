@@ -10,17 +10,11 @@
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
 using System.Threading;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace System.Windows.Forms
 {
