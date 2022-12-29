@@ -1,11 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-//
-// Milok Zbrozek InputBox Class
-// milokz@gmail.com
-// Last Modified: 29.12.2022
-//    +QueryPass
-//    +QueryDateTime
+//  
+//      Milok Zbrozek InputBox Class
+//      milokz@gmail.com
+//      Last Modified: 29.12.2022
+//          +Parent Control
 //
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -974,11 +973,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>6
-        public static DialogResult Show(string title, string promptText, string value)
+        public static DialogResult Show(string title, string promptText, string value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value;
             return dr;
         }
@@ -990,12 +989,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Icon Image</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string value, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, string value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.ReadOnly = true;
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value;
             return dr;
         }
@@ -1006,10 +1005,10 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref string value)
+        public static DialogResult Show(string title, string promptText, ref string value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value;
             return dr;
 
@@ -1022,11 +1021,11 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Icon Image</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref string value, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, ref string value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value;
             return dr;
 
@@ -1045,11 +1044,11 @@ namespace System.Windows.Forms
         /// <para>Regex: http://regexstorm.net/reference</para>
         /// </param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref string value, string InputMaskOrRegex)
+        public static DialogResult Show(string title, string promptText, ref string value, string InputMaskOrRegex, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.InputMaskOrRegex = InputMaskOrRegex;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value;
             return dr;
         }
@@ -1068,57 +1067,65 @@ namespace System.Windows.Forms
         /// </param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref string value, string InputMaskOrRegex, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, ref string value, string InputMaskOrRegex, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value.ToString();
             return dr;
         }
 
-        public static DialogResult QueryText(string title, string promptText, ref string value)
+        public static DialogResult QueryText(string title, string promptText, ref string value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
-            DialogResult dr = ib.ShowMultiline();
+            DialogResult dr = ib.ShowMultiline(parent);
             value = ib.Value;
             return dr;
         }
 
-        public static DialogResult QueryText(string title, string promptText, string value)
+        public static DialogResult QueryText(string title, string promptText, string value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.ReadOnly = true;
-            DialogResult dr = ib.ShowMultiline();
+            DialogResult dr = ib.ShowMultiline(parent);
             return dr;
         }
 
-        public static DialogResult QueryText(string title, string promptText, string value, Bitmap icon)
+        public static DialogResult QueryText(string title, string promptText, string value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.ReadOnly = true;
             ib.Icon = icon;
-            DialogResult dr = ib.ShowMultiline();
+            DialogResult dr = ib.ShowMultiline(parent);
             return dr;
         }
 
-        public static DialogResult QueryText(string title, string promptText, ref string value, Bitmap icon)
+        public static DialogResult QueryText(string title, string promptText, ref string value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.Icon = icon;
-            DialogResult dr = ib.ShowMultiline();
+            DialogResult dr = ib.ShowMultiline(parent);
             value = ib.Value;
             return dr;
         }
 
-        public static DialogResult QueryPass(string title, string promptText, ref string value)
+        public static DialogResult QueryPass(string title, string promptText, ref string value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
-            DialogResult dr = ib.ShowPass();
+            DialogResult dr = ib.ShowPass(parent);
             value = ib.Value;
             return dr;
         }
 
+        public static DialogResult QueryPass(string title, string promptText, ref string value, Bitmap icon, Control parent = null)
+        {
+            InputBox ib = new InputBox(title, promptText, value);
+            ib.Icon = icon;
+            DialogResult dr = ib.ShowPass(parent);
+            value = ib.Value;
+            return dr;
+        }
 
         private DialogResult ShowPass(Control parent = null)
         {
@@ -1189,19 +1196,19 @@ namespace System.Windows.Forms
             return _result;
         }
 
-        public static DialogResult QueryDateTime(string title, string promptText, ref DateTime value)
+        public static DialogResult QueryDateTime(string title, string promptText, ref DateTime value, Control parent = null)
         {
-            return QueryDateTime(title, promptText, null, ref value);
+            return QueryDateTime(title, promptText, null, ref value, parent);
         }
 
-        public static DialogResult QueryDate(string title, string promptText, ref DateTime value)
+        public static DialogResult QueryDate(string title, string promptText, ref DateTime value, Control parent = null)
         {
-            return QueryDateTime(title, promptText, "dd.MM.yyyy", ref value);
+            return QueryDateTime(title, promptText, "dd.MM.yyyy", ref value, parent);
         }
 
-        public static DialogResult QueryTime(string title, string promptText, ref DateTime value)
+        public static DialogResult QueryTime(string title, string promptText, ref DateTime value, Control parent = null)
         {
-            return QueryDateTime(title, promptText, "HH:mm", ref value);
+            return QueryDateTime(title, promptText, "HH:mm", ref value, parent);
         }
 
         public static DialogResult QueryDateTime(string title, string promptText, string format, ref DateTime value, Control parent = null)
