@@ -232,6 +232,16 @@ namespace System.Windows.Forms
                 return ShowComboBoxed(parent);
         }
 
+        private DialogResult ShowMasked(Control parent = null)
+        {
+            return ShowMaskedTextBoxed(parent);
+        }
+
+        private DialogResult ShowCombox(Control parent = null)
+        {
+            return ShowComboBoxed(parent);
+        }
+
         private DialogResult ShowNumericBoxed(ref int val, int min, int max, Control parent = null)
         {
             Form form = new InputBoxForm();
@@ -2211,7 +2221,7 @@ namespace System.Windows.Forms
         {
             InputBox ib = new InputBox(title, promptText, values, selectedValue);
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show(parent);
+            DialogResult dr = selectedValue == int.MinValue || selectedValue == int.MaxValue ? ib.ShowComboBoxed(parent) : ib.Show(parent);
             selectedValue = ib.SelectedIndex;
             return dr;
 
@@ -2230,7 +2240,7 @@ namespace System.Windows.Forms
             InputBox ib = new InputBox(title, promptText, values, selectedValue);
             ib.ReadOnly = true;
             ib.Icon = icon;
-            DialogResult dr = ib.Show(parent);
+            DialogResult dr = selectedValue == int.MinValue || selectedValue == int.MaxValue ? ib.ShowComboBoxed(parent) : ib.Show(parent);
             selectedValue = ib.SelectedIndex;
             return dr;
 
