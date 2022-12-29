@@ -3,7 +3,7 @@
 //
 // Milok Zbrozek InputBox Class
 // milokz@gmail.com
-// Last Modified: 30.09.2021
+// Last Modified: 29.12.2022
 //    +QueryPass
 //    +QueryDateTime
 //
@@ -18,6 +18,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.Threading;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace System.Windows.Forms
 {
@@ -227,15 +230,15 @@ namespace System.Windows.Forms
             this.SelectedIndex = SelectedIndex;
         }
 
-        private DialogResult Show()
+        private DialogResult Show(Control parent = null)
         {
             if (this._values.Length == 1)
-                return ShowMaskedTextBoxed();
+                return ShowMaskedTextBoxed(parent);
             else
-                return ShowComboBoxed();
+                return ShowComboBoxed(parent);
         }
 
-        private DialogResult ShowNumericBoxed(ref int val, int min, int max)
+        private DialogResult ShowNumericBoxed(ref int val, int min, int max, Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -281,14 +284,24 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            _result = form.ShowDialog();
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             _values[0] = ((val = (int)digitBox.Value)).ToString();
             return _result;
         }
 
-        private DialogResult ShowMaskedTextBoxed()
+        private DialogResult ShowMaskedTextBoxed(Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -339,14 +352,24 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            _result = form.ShowDialog();
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             _values[0] = textBox.Text;
             return _result;
         }
 
-        private DialogResult ShowMultiline()
+        private DialogResult ShowMultiline(Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -397,14 +420,24 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            _result = form.ShowDialog();
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             _values[0] = textBox.Text;
             return _result;
         }
 
-        private DialogResult ShowRegex(string testerText, bool allow_new, string test)
+        private DialogResult ShowRegex(string testerText, bool allow_new, string test, Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -484,7 +517,17 @@ namespace System.Windows.Forms
 
             _additData[1] = testBox;
 
-            _result = form.ShowDialog();
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             if (this._values.Length == 1)
@@ -528,7 +571,7 @@ namespace System.Windows.Forms
             };
         }
 
-        private DialogResult ShowComboBoxed()
+        private DialogResult ShowComboBoxed(Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -586,7 +629,17 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            _result = form.ShowDialog();
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             if (comboBox.SelectedIndex == -1)
@@ -601,7 +654,7 @@ namespace System.Windows.Forms
             return _result;
         }
 
-        private DialogResult ShowSelectDir()
+        private DialogResult ShowSelectDir(Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -655,14 +708,25 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            _result = form.ShowDialog();
+            _result = DialogResult.None;
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             _values[0] = textBox.Text;
             return _result;
         }
-
-        private DialogResult ShowSelectFile(string filter)
+        
+        private DialogResult ShowSelectFile(string filter, Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -721,14 +785,24 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            _result = form.ShowDialog();
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             _values[0] = textBox.Text;
             return _result;
         }
 
-        private DialogResult ShowSelectColor(ref Color color)
+        private DialogResult ShowSelectColor(ref Color color, Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -786,7 +860,17 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            _result = form.ShowDialog();
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             color = RGBConverter(textBox.Text);
@@ -1032,7 +1116,7 @@ namespace System.Windows.Forms
         }
 
 
-        private DialogResult ShowPass()
+        private DialogResult ShowPass(Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -1084,7 +1168,17 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            _result = form.ShowDialog();
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
             _values[0] = textBox.Text;
@@ -1106,7 +1200,7 @@ namespace System.Windows.Forms
             return QueryDateTime(title, promptText, "HH:mm", ref value);
         }
 
-        public static DialogResult QueryDateTime(string title, string promptText, string format, ref DateTime value)
+        public static DialogResult QueryDateTime(string title, string promptText, string format, ref DateTime value, Control parent = null)
         {
             Form form = new InputBoxForm();
             form.ShowInTaskbar = pShowInTaskBar;
@@ -1154,24 +1248,35 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            DialogResult _result = form.ShowDialog();
+            DialogResult _result;
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             form.Dispose();
             value = dtBox.Value;
             return _result;
         }
 
-        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, ref string value)
+        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, ref string value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
-            DialogResult dr = ib.ShowRegex(testerText, false, "");
+            DialogResult dr = ib.ShowRegex(testerText, false, "", parent);
             value = ib.Value;
             return dr;
         }
 
-        public static DialogResult QueryReplaceBox(string title, string promptText, string testerText, ref string value, ref string test)
+        public static DialogResult QueryReplaceBox(string title, string promptText, string testerText, ref string value, ref string test, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
-            DialogResult dr = ib.ShowRegex(testerText, false, test);
+            DialogResult dr = ib.ShowRegex(testerText, false, test, parent);
             string[] vt = ib.Value.Split(new char[] { (char)164 });
             value = vt[0];
             if (vt.Length > 1)
@@ -1181,77 +1286,77 @@ namespace System.Windows.Forms
             return dr;
         }
 
-        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, ref string value, Bitmap icon)
+        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, ref string value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.Icon = icon;
-            DialogResult dr = ib.ShowRegex(testerText, false, "");
+            DialogResult dr = ib.ShowRegex(testerText, false, "", parent);
             value = ib.Value;
             return dr;
         }
 
-        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref int selectedValue)
+        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref int selectedValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, options, selectedValue);
             ib.ReadOnly = true;
-            DialogResult dr = ib.ShowRegex(testerText, false, "");
+            DialogResult dr = ib.ShowRegex(testerText, false, "", parent);
             selectedValue = ib.SelectedIndex;
             return dr;
         }
 
-        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref int selectedValue, Bitmap icon)
+        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref int selectedValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, options, selectedValue);
             ib.ReadOnly = true;
             ib.Icon = icon;
-            DialogResult dr = ib.ShowRegex(testerText, false, "");
+            DialogResult dr = ib.ShowRegex(testerText, false, "", parent);
             selectedValue = ib.SelectedIndex;
             return dr;
         }
 
-        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref string selectedValue)
+        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref string selectedValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, options);
             ib.ReadOnly = true;
             ib.Value = selectedValue;
-            DialogResult dr = ib.ShowRegex(testerText, false, "");
+            DialogResult dr = ib.ShowRegex(testerText, false, "", parent);
             selectedValue = ib.Value;
             return dr;
         }
 
-        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref string selectedValue, Bitmap icon)
+        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref string selectedValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, options);
             ib.ReadOnly = true;
             ib.Value = selectedValue;
             ib.Icon = icon;
-            DialogResult dr = ib.ShowRegex(testerText, false, "");
+            DialogResult dr = ib.ShowRegex(testerText, false, "", parent);
             selectedValue = ib.Value;
             return dr;
         }
 
-        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref string selectedValue, bool allowNewValue)
+        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref string selectedValue, bool allowNewValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, options);
             ib.ReadOnly = !allowNewValue;
             ib.Value = selectedValue;
-            DialogResult dr = ib.ShowRegex(testerText, true, "");
+            DialogResult dr = ib.ShowRegex(testerText, true, "",parent);
             selectedValue = ib.Value;
             return dr;
         }
 
-        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref string selectedValue, bool allowNewValue, Bitmap icon)
+        public static DialogResult QueryRegexBox(string title, string promptText, string testerText, string[] options, ref string selectedValue, bool allowNewValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, options);
             ib.ReadOnly = !allowNewValue;
             ib.Value = selectedValue;
             ib.Icon = icon;
-            DialogResult dr = ib.ShowRegex(testerText, true, "");
+            DialogResult dr = ib.ShowRegex(testerText, true, "", parent);
             selectedValue = ib.Value;
             return dr;
         }
 
-        public static DialogResult QueryMultiple(string title, string[] prompts, string[] values, string inputMask, bool readOnly, Bitmap icon)
+        public static DialogResult QueryMultiple(string title, string[] prompts, string[] values, string inputMask, bool readOnly, Bitmap icon, Control parent = null)
         {
             if ((prompts == null) || (values == null) || (prompts.Length == 0) || (values.Length == 0) || (values.Length != prompts.Length))
                 return DialogResult.None;
@@ -1319,7 +1424,18 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            DialogResult _result = form.ShowDialog();
+            DialogResult _result;
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             for (int i = 0; i < prompts.Length; i++)
                 values[i] = textBoxes[i].Text;
             if (picture.Image != null) picture.Image.Dispose();
@@ -1327,7 +1443,7 @@ namespace System.Windows.Forms
             return _result;
         }
 
-        public static DialogResult QueryMultiple(string title, string[] prompts, string[] values, string inputMask, bool readOnly, Bitmap icon, MessageBoxButtons buttons, string[] buttonsText)
+        public static DialogResult QueryMultiple(string title, string[] prompts, string[] values, string inputMask, bool readOnly, Bitmap icon, MessageBoxButtons buttons, string[] buttonsText, Control parent = null)
         {
             if ((prompts == null) || (values == null) || (prompts.Length == 0) || (values.Length == 0) || (values.Length != prompts.Length))
                 return DialogResult.None;
@@ -1423,7 +1539,18 @@ namespace System.Windows.Forms
             form.AcceptButton = Buttons[0];
             form.CancelButton = Buttons[btnCount - 1];
 
-            DialogResult _result = form.ShowDialog();
+            DialogResult _result;
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             for (int i = 0; i < prompts.Length; i++)
                 values[i] = textBoxes[i].Text;
             if (picture.Image != null) picture.Image.Dispose();
@@ -1431,12 +1558,12 @@ namespace System.Windows.Forms
             return _result;
         }
 
-        public static DialogResult QueryMultiple(string title, string[] prompts, int[] values, bool readOnly, Bitmap icon)
+        public static DialogResult QueryMultiple(string title, string[] prompts, int[] values, bool readOnly, Bitmap icon, Control parent = null)
         {
             return QueryMultiple(title, prompts, values, int.MinValue, int.MaxValue, readOnly, icon);
         }
 
-        public static DialogResult QueryMultiple(string title, string[] prompts, int[] values, int minValue, int maxValue, bool readOnly, Bitmap icon)
+        public static DialogResult QueryMultiple(string title, string[] prompts, int[] values, int minValue, int maxValue, bool readOnly, Bitmap icon, Control parent = null)
         {
             if ((prompts == null) || (values == null) || (prompts.Length == 0) || (values.Length == 0) || (values.Length != prompts.Length))
                 return DialogResult.None;
@@ -1501,7 +1628,18 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            DialogResult _result = form.ShowDialog();
+            DialogResult _result;
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             for (int i = 0; i < prompts.Length; i++)
                 values[i] = (int)textBoxes[i].Value;
             if (picture.Image != null) picture.Image.Dispose();
@@ -1509,13 +1647,13 @@ namespace System.Windows.Forms
             return _result;
         }
 
-        public static DialogResult QueryMultiple(string title, string[] prompts, double[] values, bool readOnly, Bitmap icon)
+        public static DialogResult QueryMultiple(string title, string[] prompts, double[] values, bool readOnly, Bitmap icon, Control parent = null)
         {
-            return QueryMultiple(title, prompts, values, double.MinValue, double.MinValue, readOnly, icon);
+            return QueryMultiple(title, prompts, values, double.MinValue, double.MinValue, readOnly, icon, parent);
         }
 
         private static double[] qm_d_mima = new double[] { double.MinValue, double.MaxValue };
-        public static DialogResult QueryMultiple(string title, string[] prompts, double[] values, double minValue, double maxValue, bool readOnly, Bitmap icon)
+        public static DialogResult QueryMultiple(string title, string[] prompts, double[] values, double minValue, double maxValue, bool readOnly, Bitmap icon, Control parent = null)
         {
             if ((prompts == null) || (values == null) || (prompts.Length == 0) || (values.Length == 0) || (values.Length != prompts.Length))
                 return DialogResult.None;
@@ -1584,7 +1722,18 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            DialogResult _result = form.ShowDialog();
+            DialogResult _result;
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                _result = (DialogResult)res;
+            }
+            else
+            {
+                _result = form.ShowDialog();
+            };
             for (int i = 0; i < prompts.Length; i++)
                 values[i] = double.Parse(textBoxes[i].Text, System.Globalization.CultureInfo.InvariantCulture);
             if (picture.Image != null) picture.Image.Dispose();
@@ -1611,10 +1760,10 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryStringBox(string title, string promptText, ref string value)
+        public static DialogResult QueryStringBox(string title, string promptText, ref string value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value;
             return dr;
         }
@@ -1626,11 +1775,11 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Icon Image</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryStringBox(string title, string promptText, ref string value, Bitmap icon)
+        public static DialogResult QueryStringBox(string title, string promptText, ref string value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value;
             return dr;
 
@@ -1649,11 +1798,11 @@ namespace System.Windows.Forms
         /// <para>Regex: http://regexstorm.net/reference</para>
         /// </param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryStringBox(string title, string promptText, ref string value, string InputMaskOrRegex)
+        public static DialogResult QueryStringBox(string title, string promptText, ref string value, string InputMaskOrRegex, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.InputMaskOrRegex = InputMaskOrRegex;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value;
             return dr;
         }
@@ -1672,11 +1821,11 @@ namespace System.Windows.Forms
         /// </param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryStringBox(string title, string promptText, ref string value, string InputMaskOrRegex, Bitmap icon)
+        public static DialogResult QueryStringBox(string title, string promptText, ref string value, string InputMaskOrRegex, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value);
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.Value.ToString();
             return dr;
         }
@@ -1688,11 +1837,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, int value)
+        public static DialogResult Show(string title, string promptText, int value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString());
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -1704,12 +1853,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, int value, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, int value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString());
             ib.Icon = icon;
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -1720,10 +1869,10 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref int value)
+        public static DialogResult Show(string title, string promptText, ref int value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString());
-            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue);
+            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue,parent);
             value = int.Parse(ib.Value);
             return dr;
 
@@ -1736,11 +1885,11 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref int value, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, ref int value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString());
             ib.Icon = icon;
-            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue);
+            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue, parent);
             value = int.Parse(ib.Value);
             return dr;
 
@@ -1754,79 +1903,10 @@ namespace System.Windows.Forms
         /// <param name="min">Minimum Allowed Value</param>
         /// <param name="max">Maximum Allowed Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref int value, int min, int max)
+        public static DialogResult Show(string title, string promptText, ref int value, int min, int max, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString());
-            DialogResult dr = ib.ShowNumericBoxed(ref value, min, max);
-            value = int.Parse(ib.Value);
-            return dr;
-
-        }
-        /// <summary>
-        ///     Show Editable Input Box Dialog with Icon
-        /// </summary>
-        /// <param name="title">Dialog Window Title</param>
-        /// <param name="promptText">Parameter Prompt Text</param>
-        /// <param name="value">Parameter Value</param>
-        /// <param name="min">Minimum Allowed Value</param>
-        /// <param name="max">Maximum Allowed Value</param>
-        /// <param name="icon">Image Icon</param>
-        /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref int value, int min, int max, Bitmap icon)
-        {
-            InputBox ib = new InputBox(title, promptText, value.ToString());
-            ib.Icon = icon;
-            DialogResult dr = ib.ShowNumericBoxed(ref value, min, max);
-            value = int.Parse(ib.Value);
-            return dr;
-
-        }
-
-        /// <summary>
-        ///     Show Editable Input Box Dialog
-        /// </summary>
-        /// <param name="title">Dialog Window Title</param>
-        /// <param name="promptText">Parameter Prompt Text</param>
-        /// <param name="value">Parameter Value</param>
-        /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, ref int value)
-        {
-            InputBox ib = new InputBox(title, promptText, value.ToString());
-            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue);
-            value = int.Parse(ib.Value);
-            return dr;
-
-        }
-        /// <summary>
-        ///     Show Editable Input Box Dialog with Icon
-        /// </summary>
-        /// <param name="title">Dialog Window Title</param>
-        /// <param name="promptText">Parameter Prompt Text</param>
-        /// <param name="value">Parameter Value</param>
-        /// <param name="icon">Image Icon</param>
-        /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, ref int value, Bitmap icon)
-        {
-            InputBox ib = new InputBox(title, promptText, value.ToString());
-            ib.Icon = icon;
-            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue);
-            value = int.Parse(ib.Value);
-            return dr;
-
-        }
-        /// <summary>
-        ///     Show Editable Input Box Dialog
-        /// </summary>
-        /// <param name="title">Dialog Window Title</param>
-        /// <param name="promptText">Parameter Prompt Text</param>
-        /// <param name="value">Parameter Value</param>
-        /// <param name="min">Minimum Allowed Value</param>
-        /// <param name="max">Maximum Allowed Value</param>
-        /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, ref int value, int min, int max)
-        {
-            InputBox ib = new InputBox(title, promptText, value.ToString());
-            DialogResult dr = ib.ShowNumericBoxed(ref value, min, max);
+            DialogResult dr = ib.ShowNumericBoxed(ref value, min, max, parent);
             value = int.Parse(ib.Value);
             return dr;
 
@@ -1841,11 +1921,80 @@ namespace System.Windows.Forms
         /// <param name="max">Maximum Allowed Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, ref int value, int min, int max, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, ref int value, int min, int max, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString());
             ib.Icon = icon;
-            DialogResult dr = ib.ShowNumericBoxed(ref value, min, max);
+            DialogResult dr = ib.ShowNumericBoxed(ref value, min, max, parent);
+            value = int.Parse(ib.Value);
+            return dr;
+
+        }
+
+        /// <summary>
+        ///     Show Editable Input Box Dialog
+        /// </summary>
+        /// <param name="title">Dialog Window Title</param>
+        /// <param name="promptText">Parameter Prompt Text</param>
+        /// <param name="value">Parameter Value</param>
+        /// <returns>DialogResult</returns>
+        public static DialogResult QueryNumberBox(string title, string promptText, ref int value, Control parent = null)
+        {
+            InputBox ib = new InputBox(title, promptText, value.ToString());
+            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue, parent);
+            value = int.Parse(ib.Value);
+            return dr;
+
+        }
+        /// <summary>
+        ///     Show Editable Input Box Dialog with Icon
+        /// </summary>
+        /// <param name="title">Dialog Window Title</param>
+        /// <param name="promptText">Parameter Prompt Text</param>
+        /// <param name="value">Parameter Value</param>
+        /// <param name="icon">Image Icon</param>
+        /// <returns>DialogResult</returns>
+        public static DialogResult QueryNumberBox(string title, string promptText, ref int value, Bitmap icon, Control parent = null)
+        {
+            InputBox ib = new InputBox(title, promptText, value.ToString());
+            ib.Icon = icon;
+            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue, parent);
+            value = int.Parse(ib.Value);
+            return dr;
+
+        }
+        /// <summary>
+        ///     Show Editable Input Box Dialog
+        /// </summary>
+        /// <param name="title">Dialog Window Title</param>
+        /// <param name="promptText">Parameter Prompt Text</param>
+        /// <param name="value">Parameter Value</param>
+        /// <param name="min">Minimum Allowed Value</param>
+        /// <param name="max">Maximum Allowed Value</param>
+        /// <returns>DialogResult</returns>
+        public static DialogResult QueryNumberBox(string title, string promptText, ref int value, int min, int max, Control parent = null)
+        {
+            InputBox ib = new InputBox(title, promptText, value.ToString());
+            DialogResult dr = ib.ShowNumericBoxed(ref value, min, max, parent);
+            value = int.Parse(ib.Value);
+            return dr;
+
+        }
+        /// <summary>
+        ///     Show Editable Input Box Dialog with Icon
+        /// </summary>
+        /// <param name="title">Dialog Window Title</param>
+        /// <param name="promptText">Parameter Prompt Text</param>
+        /// <param name="value">Parameter Value</param>
+        /// <param name="min">Minimum Allowed Value</param>
+        /// <param name="max">Maximum Allowed Value</param>
+        /// <param name="icon">Image Icon</param>
+        /// <returns>DialogResult</returns>
+        public static DialogResult QueryNumberBox(string title, string promptText, ref int value, int min, int max, Bitmap icon, Control parent = null)
+        {
+            InputBox ib = new InputBox(title, promptText, value.ToString());
+            ib.Icon = icon;
+            DialogResult dr = ib.ShowNumericBoxed(ref value, min, max, parent);
             value = int.Parse(ib.Value);
             return dr;
 
@@ -1860,11 +2009,11 @@ namespace System.Windows.Forms
         /// <param name="values">List Values</param>
         /// <param name="selectedValue">Selected Value Index</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref int selectedValue)
+        public static DialogResult Show(string title, string promptText, string[] values, ref int selectedValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values, selectedValue);
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.SelectedIndex;
             return dr;
 
@@ -1878,12 +2027,12 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value Index</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref int selectedValue, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, string[] values, ref int selectedValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values, selectedValue);
             ib.ReadOnly = true;
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.SelectedIndex;
             return dr;
 
@@ -1897,12 +2046,12 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value Index</param>
         /// <param name="icons">ImageList</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref int selectedValue, ImageList icons)
+        public static DialogResult Show(string title, string promptText, string[] values, ref int selectedValue, ImageList icons, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values, selectedValue);
             ib.ReadOnly = true;
             ib.IconList = icons;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.SelectedIndex;
             return dr;
 
@@ -1915,12 +2064,12 @@ namespace System.Windows.Forms
         /// <param name="values">List Values</param>
         /// <param name="selectedValue">Selected Value Text</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue)
+        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = true;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
 
@@ -1934,13 +2083,13 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value Text</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = true;
             ib.Icon = icon;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
 
@@ -1954,13 +2103,13 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value Text</param>
         /// <param name="icons">ImageList</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, ImageList icons)
+        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, ImageList icons, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = true;
             ib.IconList = icons;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -1980,13 +2129,13 @@ namespace System.Windows.Forms
         /// <para>Regex: http://regexstorm.net/reference</para>
         /// </param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, string InputMaskOrRegex)
+        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, string InputMaskOrRegex, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.InputMaskOrRegex = InputMaskOrRegex;
             ib.ReadOnly = false;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -2006,14 +2155,14 @@ namespace System.Windows.Forms
         /// </param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, string InputMaskOrRegex, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, string InputMaskOrRegex, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.InputMaskOrRegex = InputMaskOrRegex;
             ib.ReadOnly = false;
             ib.Icon = icon;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -2026,12 +2175,12 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value Text</param>
         /// <param name="allowNewValue">Changable or Editable</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, bool allowNewValue)
+        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, bool allowNewValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = !allowNewValue;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -2045,13 +2194,13 @@ namespace System.Windows.Forms
         /// <param name="allowNewValue">Changable or Editable</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, bool allowNewValue, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, string[] values, ref string selectedValue, bool allowNewValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = !allowNewValue;
             ib.Icon = icon;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -2064,11 +2213,11 @@ namespace System.Windows.Forms
         /// <param name="values">List Values</param>
         /// <param name="selectedValue">Selected Value Index</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref int selectedValue)
+        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref int selectedValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values, selectedValue);
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.SelectedIndex;
             return dr;
 
@@ -2082,12 +2231,12 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value Index</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref int selectedValue, Bitmap icon)
+        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref int selectedValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values, selectedValue);
             ib.ReadOnly = true;
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.SelectedIndex;
             return dr;
 
@@ -2100,12 +2249,12 @@ namespace System.Windows.Forms
         /// <param name="values">List Values</param>
         /// <param name="selectedValue">Selected Value Text</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue)
+        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = true;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
 
@@ -2119,13 +2268,13 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value Text</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, Bitmap icon)
+        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = true;
             ib.Icon = icon;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
 
@@ -2145,13 +2294,13 @@ namespace System.Windows.Forms
         /// <para>Regex: http://regexstorm.net/reference</para>
         /// </param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, string InputMaskOrRegex)
+        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, string InputMaskOrRegex, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.InputMaskOrRegex = InputMaskOrRegex;
             ib.ReadOnly = false;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -2171,14 +2320,14 @@ namespace System.Windows.Forms
         /// </param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, string InputMaskOrRegex, Bitmap icon)
+        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, string InputMaskOrRegex, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.InputMaskOrRegex = InputMaskOrRegex;
             ib.ReadOnly = false;
             ib.Icon = icon;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -2191,12 +2340,12 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value Text</param>
         /// <param name="allowNewValue">Changable or Editable</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, bool allowNewValue)
+        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, bool allowNewValue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = !allowNewValue;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -2210,13 +2359,13 @@ namespace System.Windows.Forms
         /// <param name="allowNewValue">Changable or Editable</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, bool allowNewValue, Bitmap icon)
+        public static DialogResult QueryListBox(string title, string promptText, string[] values, ref string selectedValue, bool allowNewValue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, values);
             ib.ReadOnly = !allowNewValue;
             ib.Icon = icon;
             ib.Value = selectedValue;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -2230,11 +2379,11 @@ namespace System.Windows.Forms
         /// <param name="textFalse">Text for False Value</param>
         /// <param name="textTrue">Text for True Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref bool value, string textFalse, string textTrue)
+        public static DialogResult Show(string title, string promptText, ref bool value, string textFalse, string textTrue, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, new string[] { textFalse, textTrue }, value ? 1 : 0);
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.SelectedIndex == 1;
             return dr;
         }
@@ -2248,12 +2397,12 @@ namespace System.Windows.Forms
         /// <param name="textTrue">Text for True Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref bool value, string textFalse, string textTrue, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, ref bool value, string textFalse, string textTrue, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, new string[] { textFalse, textTrue }, value ? 1 : 0);
             ib.Icon = icon;
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             value = ib.SelectedIndex == 1;
             return dr;
         }
@@ -2265,11 +2414,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, float value)
+        public static DialogResult Show(string title, string promptText, float value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -2281,12 +2430,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, float value, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, float value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.Icon = icon;
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -2297,11 +2446,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref float value)
+        public static DialogResult Show(string title, string promptText, ref float value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.InputMaskOrRegex = "^(([+-]?)|([+-]?[0-9]{1,}[.]?[0-9]{0,})|([+-]?[.][0-9]{0,}))$";
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             if ((ib.Value == "-") || (ib.Value == "."))
                 value = 0;
             else
@@ -2317,12 +2466,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref float value, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, ref float value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.InputMaskOrRegex = "^(([+-]?)|([+-]?[0-9]{1,}[.]?[0-9]{0,})|([+-]?[.][0-9]{0,}))$";
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             if ((ib.Value == "-") || (ib.Value == "."))
                 value = 0;
             else
@@ -2337,11 +2486,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, float value)
+        public static DialogResult QueryNumberBox(string title, string promptText, float value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -2353,12 +2502,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, float value, Bitmap icon)
+        public static DialogResult QueryNumberBox(string title, string promptText, float value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.Icon = icon;
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -2369,11 +2518,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, ref float value)
+        public static DialogResult QueryNumberBox(string title, string promptText, ref float value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.InputMaskOrRegex = "^(([+-]?)|([+-]?[0-9]{1,}[.]?[0-9]{0,})|([+-]?[.][0-9]{0,}))$";
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             if ((ib.Value == "-") || (ib.Value == "."))
                 value = 0;
             else
@@ -2389,12 +2538,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, ref float value, Bitmap icon)
+        public static DialogResult QueryNumberBox(string title, string promptText, ref float value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.InputMaskOrRegex = "^(([+-]?)|([+-]?[0-9]{1,}[.]?[0-9]{0,})|([+-]?[.][0-9]{0,}))$";
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             if ((ib.Value == "-") || (ib.Value == "."))
                 value = 0;
             else
@@ -2409,11 +2558,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, double value)
+        public static DialogResult Show(string title, string promptText, double value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -2425,12 +2574,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, double value, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, double value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.Icon = icon;
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -2441,11 +2590,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref double value)
+        public static DialogResult Show(string title, string promptText, ref double value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.InputMaskOrRegex = "^(([+-]?)|([+-]?[0-9]{1,}[.]?[0-9]{0,})|([+-]?[.][0-9]{0,}))$";
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             if ((ib.Value == "-") || (ib.Value == "."))
                 value = 0;
             else
@@ -2461,12 +2610,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, ref double value, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, ref double value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.InputMaskOrRegex = "^(([+-]?)|([+-]?[0-9]{1,}[.]?[0-9]{0,})|([+-]?[.][0-9]{0,}))$";
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             if ((ib.Value == "-") || (ib.Value == "."))
                 value = 0;
             else
@@ -2481,11 +2630,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, double value)
+        public static DialogResult QueryNumberBox(string title, string promptText, double value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -2497,12 +2646,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, double value, Bitmap icon)
+        public static DialogResult QueryNumberBox(string title, string promptText, double value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.Icon = icon;
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             return dr;
 
         }
@@ -2513,11 +2662,11 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="value">Parameter Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, ref double value)
+        public static DialogResult QueryNumberBox(string title, string promptText, ref double value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.InputMaskOrRegex = "^(([+-]?)|([+-]?[0-9]{1,}[.]?[0-9]{0,})|([+-]?[.][0-9]{0,}))$";
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             if ((ib.Value == "-") || (ib.Value == "."))
                 value = 0;
             else
@@ -2533,12 +2682,12 @@ namespace System.Windows.Forms
         /// <param name="value">Parameter Value</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryNumberBox(string title, string promptText, ref double value, Bitmap icon)
+        public static DialogResult QueryNumberBox(string title, string promptText, ref double value, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString(System.Globalization.CultureInfo.InvariantCulture));
             ib.InputMaskOrRegex = "^(([+-]?)|([+-]?[0-9]{1,}[.]?[0-9]{0,})|([+-]?[.][0-9]{0,}))$";
             ib.Icon = icon;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             if ((ib.Value == "-") || (ib.Value == "."))
                 value = 0;
             else
@@ -2554,7 +2703,7 @@ namespace System.Windows.Forms
         /// <param name="enumType">Type of Enum</param>
         /// <param name="selectedValue">Selected Value</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, Type enumType, ref object selectedValue)
+        public static DialogResult Show(string title, string promptText, Type enumType, ref object selectedValue, Control parent = null)
         {
             Array vls = Enum.GetValues((enumType));
 
@@ -2565,7 +2714,7 @@ namespace System.Windows.Forms
             InputBox ib = new InputBox(title, promptText, vals.ToArray());
             ib.Value = selectedValue.ToString();
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = vls.GetValue(ib.SelectedIndex);
             return dr;
         }
@@ -2578,7 +2727,7 @@ namespace System.Windows.Forms
         /// <param name="selectedValue">Selected Value</param>
         /// /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult Show(string title, string promptText, Type enumType, ref object selectedValue, Bitmap icon)
+        public static DialogResult Show(string title, string promptText, Type enumType, ref object selectedValue, Bitmap icon, Control parent = null)
         {
             Array vls = Enum.GetValues((enumType));
 
@@ -2590,7 +2739,7 @@ namespace System.Windows.Forms
             ib.Icon = icon;
             ib.Value = selectedValue.ToString();
             ib.ReadOnly = true;
-            DialogResult dr = ib.Show();
+            DialogResult dr = ib.Show(parent);
             selectedValue = vls.GetValue(ib.SelectedIndex);
             return dr;
         }
@@ -2602,13 +2751,14 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="path">DIrectory</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryDirectoryBox(string title, string promptText, ref string path)
+        public static DialogResult QueryDirectoryBox(string title, string promptText, ref string path, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, path);
-            DialogResult dr = ib.ShowSelectDir();
+            DialogResult dr = ib.ShowSelectDir(parent);
             path = ib.Value;
             return dr;
         }
+
         /// <summary>
         ///     Show Editable Directory Input Box With Browse Button
         /// </summary>
@@ -2617,11 +2767,11 @@ namespace System.Windows.Forms
         /// <param name="path">DIrectory</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryDirectoryBox(string title, string promptText, ref string path, Bitmap icon)
+        public static DialogResult QueryDirectoryBox(string title, string promptText, ref string path, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, path);
             ib.Icon = icon;
-            DialogResult dr = ib.ShowSelectDir();
+            DialogResult dr = ib.ShowSelectDir(parent);
             path = ib.Value;
             return dr;
         }
@@ -2634,10 +2784,10 @@ namespace System.Windows.Forms
         /// <param name="file">File Path</param>
         /// <param name="filter">OpenFileDialog Filter</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryFileBox(string title, string promptText, ref string file, string filter)
+        public static DialogResult QueryFileBox(string title, string promptText, ref string file, string filter, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, file);
-            DialogResult dr = ib.ShowSelectFile(filter);
+            DialogResult dr = ib.ShowSelectFile(filter, parent);
             file = ib.Value;
             return dr;
         }
@@ -2651,10 +2801,10 @@ namespace System.Windows.Forms
         /// <param name="filter">OpenFileDialog Filter</param>
         /// <param name="icon">Image Icon</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryFileBox(string title, string promptText, ref string file, string filter, Bitmap icon)
+        public static DialogResult QueryFileBox(string title, string promptText, ref string file, string filter, Bitmap icon, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, file);
-            DialogResult dr = ib.ShowSelectFile(filter);
+            DialogResult dr = ib.ShowSelectFile(filter, parent);
             file = ib.Value;
             return dr;
         }
@@ -2666,10 +2816,10 @@ namespace System.Windows.Forms
         /// <param name="promptText">Parameter Prompt Text</param>
         /// <param name="color">Color</param>
         /// <returns>DialogResult</returns>
-        public static DialogResult QueryColorBox(string title, string promptText, ref Color color)
+        public static DialogResult QueryColorBox(string title, string promptText, ref Color color, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText);
-            DialogResult dr = ib.ShowSelectColor(ref color);
+            DialogResult dr = ib.ShowSelectColor(ref color, parent);
             return dr;
         }
 
@@ -2694,11 +2844,11 @@ namespace System.Windows.Forms
         }
 
         private static TextBox query_info_box = null;
-        public static DialogResult QueryInfoBox(string title, string topText, string bottomText, string mainText)
+        public static DialogResult QueryInfoBox(string title, string topText, string bottomText, string mainText, Control parent = null)
         {
-            return QueryInfoBox(title, topText, bottomText, mainText, true, false, MessageBoxButtons.OK, true);
+            return QueryInfoBox(title, topText, bottomText, mainText, true, false, MessageBoxButtons.OK, true, parent);
         }
-        public static DialogResult QueryInfoBox(string title, string topText, string bottomText, string mainText, bool readOnly, bool allowNewLoadSave, MessageBoxButtons buttons, bool closeButton)
+        public static DialogResult QueryInfoBox(string title, string topText, string bottomText, string mainText, bool readOnly, bool allowNewLoadSave, MessageBoxButtons buttons, bool closeButton, Control parent = null)
         {
             Form form = closeButton ? new Form() : new InputBoxForm();
             form.DialogResult = DialogResult.Cancel;
@@ -2847,7 +2997,18 @@ namespace System.Windows.Forms
             };
 
             query_info_box = textBox1;
-            DialogResult dr = form.ShowDialog();
+            DialogResult dr;
+            if (parent != null)
+            {
+                int res = -1;
+                parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
+                while (Interlocked.CompareExchange(ref res, -1, -1) == -1) Thread.Sleep(100);
+                dr = (DialogResult)res;
+            }
+            else
+            {
+                dr = form.ShowDialog();
+            };
             query_info_box = null;
             form.Dispose();
             return dr;
