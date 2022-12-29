@@ -119,6 +119,11 @@ namespace dkxce
                 else if (_he < 0) this.Height = Parent.Height - (_top >= 0 ? _top : Parent.Height + _top) + _he;
             };
         }
+        
+        public void Relocate()
+        {
+            Parent_Resize(null, null);
+        }
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
