@@ -1,7 +1,7 @@
 ﻿//
 // C# (cross-platform)
 // IniSaved
-// v 0.01, 10.02.2023
+// v 0.02, 12.02.2023
 // milokz@gmail.com
 // en,ru,1251,utf-8
 //
@@ -290,7 +290,7 @@ namespace System.Xml
 
                 // get param=value
                 string[] kvp = line.Split(new char[] { '=' }, 2);
-                string key = kvp[0] == "@" ? "@" : kvp[0].Split(new char[] { ':', ';', ',', '.', '@', '(', ')', '{', '}', '[', ']', '*', '?' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                string key = obj is IDictionary || kvp[0] == "@" ? kvp[0] : kvp[0].Split(new char[] { ':', ';', ',', '.', '@', '(', ')', '{', '}', '[', ']', '*', '?' }, StringSplitOptions.RemoveEmptyEntries)[0];
                 object val = kvp.Length > 1 ? kvp[1] : null;
 
                 // obj is simple type
