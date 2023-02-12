@@ -368,6 +368,10 @@ namespace System.Xml
                         sr.DiscardBufferedData();
                         sr.BaseStream.Position = 0;
                         for (int i = 0; i < lines_readed; i++) sr.ReadLine();
+                    }
+                    else // unknown object
+                    {
+                        v = (object)val.ToString().Replace("\\r", "\r").Replace("\\n", "\n");
                     };
 
                     try { (obj as IDictionary).Add(k, v); }
