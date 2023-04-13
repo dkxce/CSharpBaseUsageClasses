@@ -27,7 +27,7 @@ namespace dkxce
 
         public int Compare(object x, object y)
         {
-            if (lv.Sorting != SortOrder.Ascending && lv.Sorting != SortOrder.Descending) return 0;
+            // if (lv.Sorting != SortOrder.Ascending && lv.Sorting != SortOrder.Descending) return 0;
 
             ListViewItem listviewX = (ListViewItem)x;
             ListViewItem listviewY = (ListViewItem)y;      
