@@ -22,10 +22,10 @@ namespace System.Xml
     public class XMLSaved<T>
     {
         /// <summary>
-        ///     Сохранение структуры в файл
+        ///     РЎРѕС…СЂР°РЅРµРЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ РІ С„Р°Р№Р»
         /// </summary>
-        /// <param name="file">Полный путь к файлу</param>
-        /// <param name="obj">Структура</param>
+        /// <param name="file">РџРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ</param>
+        /// <param name="obj">РЎС‚СЂСѓРєС‚СѓСЂР°</param>
         public static void Save(string file, T obj)
         {
             System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(T));
@@ -33,6 +33,11 @@ namespace System.Xml
             xs.Serialize(writer, obj);
             writer.Flush();
             writer.Close();
+        }
+		
+		public static void SaveHere(string file, T obj)
+        {
+            Save(System.IO.Path.Combine(GetCurrentDir(), file), obj);
         }
 
         public static string Save(T obj)
@@ -50,10 +55,10 @@ namespace System.Xml
         }
 
         /// <summary>
-        ///     Подключение структуры из файла
+        ///     РџРѕРґРєР»СЋС‡РµРЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ РёР· С„Р°Р№Р»Р°
         /// </summary>
-        /// <param name="file">Полный путь к файлу</param>
-        /// <returns>Структура</returns>
+        /// <param name="file">РџРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ</param>
+        /// <returns>РЎС‚СЂСѓРєС‚СѓСЂР°</returns>
         public static T Load(string file)
         {
             // if couldn't create file in temp - add credintals
@@ -64,6 +69,46 @@ namespace System.Xml
             reader.Close();
             return c;
         }
+		
+		public static T Load(byte[] data)
+        {
+            try
+            {
+                System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(T));
+                MemoryStream ms = new MemoryStream(data);
+                System.IO.StreamReader reader = new StreamReader(ms);
+                T c = (T)xs.Deserialize(reader);
+                reader.Close();
+                ms.Close();
+                return c;
+            }
+            catch { };
+            {
+                Type type = typeof(T);
+                System.Reflection.ConstructorInfo c = type.GetConstructor(new Type[0]);
+                return (T)c.Invoke(null);
+            };
+        }
+
+        public static T Load(byte[] data, int index, int count)
+        {
+            try
+            {
+                System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(T));
+                MemoryStream ms = new MemoryStream(data, index, count);
+                System.IO.StreamReader reader = new StreamReader(ms);
+                T c = (T)xs.Deserialize(reader);
+                reader.Close();
+                ms.Close();
+                return c;
+            }
+            catch { };
+            {
+                Type type = typeof(T);
+                System.Reflection.ConstructorInfo c = type.GetConstructor(new Type[0]);
+                return (T)c.Invoke(null);
+            };
+        }	
 
         public static T LoadText(string text)
         {
@@ -80,17 +125,17 @@ namespace System.Xml
         }
 
         /// <summary>
-        ///     Подключение структуры из файла
+        ///     РџРѕРґРєР»СЋС‡РµРЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ РёР· С„Р°Р№Р»Р°
         /// </summary>
-        /// <param name="file">Полный путь к файлу</param>
-        /// <returns>Структура</returns>
+        /// <param name="file">РџРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ</param>
+        /// <returns>РЎС‚СЂСѓРєС‚СѓСЂР°</returns>
         public static T LoadFile(string file) { return Load(file); }
 
         /// <summary>
-        ///     Подключение структуры из URL
+        ///     РџРѕРґРєР»СЋС‡РµРЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ РёР· URL
         /// </summary>
-        /// <param name="url">Ссылка</param>
-        /// <returns>Структура</returns>
+        /// <param name="url">РЎСЃС‹Р»РєР°</param>
+        /// <returns>РЎС‚СЂСѓРєС‚СѓСЂР°</returns>
         public static T LoadURL(string url)
         {
             System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(T));
@@ -104,11 +149,16 @@ namespace System.Xml
             rp.Close();
             return c;
         }
+		
+		public static T LoadHere(string file)
+        {
+            return Load(System.IO.Path.Combine(GetCurrentDir(), file));
+        }
 
         /// <summary>
-        ///     Получение папки, из которой запущено приложение
+        ///     РџРѕР»СѓС‡РµРЅРёРµ РїР°РїРєРё, РёР· РєРѕС‚РѕСЂРѕР№ Р·Р°РїСѓС‰РµРЅРѕ РїСЂРёР»РѕР¶РµРЅРёРµ
         /// </summary>
-        /// <returns>Полный путь к папки с \ на конце</returns>
+        /// <returns>РџРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє РїР°РїРєРё СЃ \ РЅР° РєРѕРЅС†Рµ</returns>
         public static string GetCurrentDir()
         {
             string fname = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase.ToString();
@@ -119,11 +169,11 @@ namespace System.Xml
         }
 
         /// <summary>
-        ///     Подключение объекта класса по интерфейсу из DLL
-        ///     Конструктор класса должен быть без аргументов
+        ///     РџРѕРґРєР»СЋС‡РµРЅРёРµ РѕР±СЉРµРєС‚Р° РєР»Р°СЃСЃР° РїРѕ РёРЅС‚РµСЂС„РµР№СЃСѓ РёР· DLL
+        ///     РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ Р±РµР· Р°СЂРіСѓРјРµРЅС‚РѕРІ
         /// </summary>
-        /// <param name="filename">Полный путь к файлу</param>
-        /// <returns>Объект класса</returns>
+        /// <param name="filename">РџРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ</param>
+        /// <returns>РћР±СЉРµРєС‚ РєР»Р°СЃСЃР°</returns>
         public static T LoadFromDLL(string filename)
         {
             System.Reflection.Assembly asm = System.Reflection.Assembly.LoadFile(filename);
@@ -163,12 +213,12 @@ namespace System.Xml
         }
 
         /// <summary>
-        ///     Подключение объекта класса по интерфейсу из DLL по URL
-        ///     Конструктор класса должен быть без аргументов
-        ///     (Используется для интерфейсов)
+        ///     РџРѕРґРєР»СЋС‡РµРЅРёРµ РѕР±СЉРµРєС‚Р° РєР»Р°СЃСЃР° РїРѕ РёРЅС‚РµСЂС„РµР№СЃСѓ РёР· DLL РїРѕ URL
+        ///     РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ Р±РµР· Р°СЂРіСѓРјРµРЅС‚РѕРІ
+        ///     (РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃРѕРІ)
         /// </summary>
-        /// <param name="url">Ссылка</param>
-        /// <returns>Объект класса</returns>
+        /// <param name="url">РЎСЃС‹Р»РєР°</param>
+        /// <returns>РћР±СЉРµРєС‚ РєР»Р°СЃСЃР°</returns>
         public static T LoadFromDLL_URL(string url)
         {
             System.Net.WebRequest wr = System.Net.HttpWebRequest.Create(url);
@@ -201,31 +251,31 @@ namespace System.Xml
         }
 
         /// <summary>
-        ///     Подключение объекта класса по типу через Remoting
+        ///     РџРѕРґРєР»СЋС‡РµРЅРёРµ РѕР±СЉРµРєС‚Р° РєР»Р°СЃСЃР° РїРѕ С‚РёРїСѓ С‡РµСЂРµР· Remoting
         ///     (Ex: tcp://dns_host_name:port/uri )
         /// </summary>
         /// <param name="url"></param>
-        /// <returns>Объект класса</returns>
+        /// <returns>РћР±СЉРµРєС‚ РєР»Р°СЃСЃР°</returns>
         public static T LoadRemoteDLL_URL(string url)
         {
             return (T)System.Runtime.Remoting.RemotingServices.Connect(typeof(T), url);
         }
 
         /// <summary>
-        ///     Отключение объекта класса от Remoting
+        ///     РћС‚РєР»СЋС‡РµРЅРёРµ РѕР±СЉРµРєС‚Р° РєР»Р°СЃСЃР° РѕС‚ Remoting
         /// </summary>
         /// <param name="obj"></param>
-        /// <returns>Результат</returns>
+        /// <returns>Р РµР·СѓР»СЊС‚Р°С‚</returns>
         public static bool UnLoadRemoteDLL(object obj)
         {
             return System.Runtime.Remoting.RemotingServices.Disconnect((MarshalByRefObject)obj);
         }
 
         /// <summary>
-        ///     Шифрование текста
+        ///     РЁРёС„СЂРѕРІР°РЅРёРµ С‚РµРєСЃС‚Р°
         /// </summary>
-        /// <param name="textIn">текст</param>
-        /// <returns>HASH текста</returns>
+        /// <param name="textIn">С‚РµРєСЃС‚</param>
+        /// <returns>HASH С‚РµРєСЃС‚Р°</returns>
         public static string CodeInString(string textIn)
         {
             string txt = textIn.Trim();
@@ -256,10 +306,10 @@ namespace System.Xml
         }
 
         /// <summary>
-        ///     Дешифровка текста
+        ///     Р”РµС€РёС„СЂРѕРІРєР° С‚РµРєСЃС‚Р°
         /// </summary>
-        /// <param name="textIn">HASH текста</param>
-        /// <returns>текст</returns>
+        /// <param name="textIn">HASH С‚РµРєСЃС‚Р°</param>
+        /// <returns>С‚РµРєСЃС‚</returns>
         public static string CodeOutString(string textIn)
         {
             string txt = textIn;
@@ -290,7 +340,7 @@ namespace System.Xml
         }
 
         /// <summary>
-        ///     Добавляем ошибку в системный лог
+        ///     Р”РѕР±Р°РІР»СЏРµРј РѕС€РёР±РєСѓ РІ СЃРёСЃС‚РµРјРЅС‹Р№ Р»РѕРі
         /// </summary>
         /// <param name="msg"></param>
         public static void AddErr2SysLog(string msg)
@@ -316,7 +366,7 @@ namespace System.Xml
         }
 
         /// <summary>
-        ///     Добавляем в системный лог
+        ///     Р”РѕР±Р°РІР»СЏРµРј РІ СЃРёСЃС‚РµРјРЅС‹Р№ Р»РѕРі
         /// </summary>
         /// <param name="msg"></param>
         public static void Add2SysLog(string msg)
@@ -329,6 +379,35 @@ namespace System.Xml
                 System.Diagnostics.EventLog.WriteEntry(sSource, msg, System.Diagnostics.EventLogEntryType.Information);
             }
             catch { };
+        }
+    }
+	
+	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class XmlCommentAttribute : Attribute
+    {
+        public XmlCommentAttribute(string value) { this.Value = value; }
+        public string Value { get; set; }
+    }
+
+    public static class XmlCommentExtensions
+    {
+        const string XmlCommentPropertyPostfix = "XmlComment";
+
+        static XmlCommentAttribute GetXmlCommentAttribute(this Type type, string memberName)
+        {
+            PropertyInfo member = type.GetProperty(memberName);
+            if (member == null) return null;
+            XmlCommentAttribute attr = member.GetCustomAttribute<XmlCommentAttribute>();
+            return attr;
+        }
+
+        public static XmlComment GetXmlComment(this Type type, [CallerMemberName] string memberName = "")
+        {
+            XmlCommentAttribute attr = GetXmlCommentAttribute(type, memberName);
+            if (attr == null && memberName.EndsWith(XmlCommentPropertyPostfix))
+                    attr = GetXmlCommentAttribute(type, memberName.Substring(0, memberName.Length - XmlCommentPropertyPostfix.Length));
+            if (attr == null || string.IsNullOrEmpty(attr.Value)) return null;
+            return new XmlDocument().CreateComment(attr.Value);
         }
     }
 }
