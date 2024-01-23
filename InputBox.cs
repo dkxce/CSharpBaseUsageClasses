@@ -23,7 +23,7 @@ namespace System.Windows.Forms
         public static string pCancel_Text { get; set; } = "Cancel";
         public static string pOk_Yes { get; set; } = "Yes";
         public static string pOk_No { get; set; } = "No";
-        public static string pOk_Abortv = "Прервать";
+        public static string pOk_Abortv { get; set; } = "Прервать";
         public static string pOk_Retry { get; set; } = "Повтор";
         public static string pOk_Ignore { get; set; } = "Пропуск";
         public static bool pShowInTaskBar { get; set; } = false;
