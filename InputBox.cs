@@ -14,11 +14,16 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace System.Windows.Forms
 {
     public class InputBox
     {
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
         public static string pOk_Text { get; set; } = "OK";
         public static string pCancel_Text { get; set; } = "Cancel";
         public static string pOk_Yes { get; set; } = "Yes";
@@ -243,6 +248,22 @@ namespace System.Windows.Forms
             return ShowComboBoxed(parent);
         }
 
+        private bool DetectNoConsole(ref Control parent)
+        {
+            try
+            {
+                IntPtr cPtr = GetConsoleWindow();
+                if (cPtr != IntPtr.Zero)
+                {
+                    parent = Control.FromHandle(cPtr);
+                    if (parent == null) parent = Control.FromHandle(Process.GetCurrentProcess().MainWindowHandle);
+                    return parent != null;
+                };
+            }
+            catch { };
+            return false;
+        }
+
         private DialogResult ShowNumericBoxed(ref int val, int min, int max, Control parent = null)
         {
             Form form = new InputBoxForm();
@@ -288,7 +309,7 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
@@ -297,6 +318,7 @@ namespace System.Windows.Forms
             }
             else
             {
+                form.StartPosition = FormStartPosition.CenterScreen;
                 _result = form.ShowDialog();
             };
             if (picture.Image != null) picture.Image.Dispose();
@@ -355,7 +377,7 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
@@ -364,6 +386,7 @@ namespace System.Windows.Forms
             }
             else
             {
+                form.StartPosition = FormStartPosition.CenterScreen;
                 _result = form.ShowDialog();
             };
             if (picture.Image != null) picture.Image.Dispose();
@@ -423,7 +446,7 @@ namespace System.Windows.Forms
             form.CancelButton = buttonCancel;
             if (defHeight > 0) form.Height = defWidth;
 
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
@@ -432,6 +455,7 @@ namespace System.Windows.Forms
             }
             else
             {
+                form.StartPosition = FormStartPosition.CenterScreen;
                 _result = form.ShowDialog();
             };
             if (picture.Image != null) picture.Image.Dispose();
@@ -519,7 +543,7 @@ namespace System.Windows.Forms
 
             _additData[1] = testBox;
 
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
@@ -528,6 +552,7 @@ namespace System.Windows.Forms
             }
             else
             {
+                form.StartPosition = FormStartPosition.CenterScreen;
                 _result = form.ShowDialog();
             };
             if (picture.Image != null) picture.Image.Dispose();
@@ -630,7 +655,7 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
@@ -639,7 +664,8 @@ namespace System.Windows.Forms
             }
             else
             {
-                _result = form.ShowDialog();
+                form.StartPosition = FormStartPosition.CenterScreen;
+               _result = form.ShowDialog();
             };
             if (picture.Image != null) picture.Image.Dispose();
             form.Dispose();
@@ -709,7 +735,7 @@ namespace System.Windows.Forms
             form.CancelButton = buttonCancel;
 
             _result = DialogResult.None;
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
@@ -784,7 +810,7 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
@@ -858,7 +884,7 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
@@ -1173,7 +1199,7 @@ namespace System.Windows.Forms
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
 
-            if (parent != null)
+            if (parent != null || DetectNoConsole(ref parent))
             {
                 int res = -1;
                 parent.BeginInvoke(new ThreadStart(delegate { try { Interlocked.Exchange(ref res, (int)form.ShowDialog(parent)); } catch { }; }));
