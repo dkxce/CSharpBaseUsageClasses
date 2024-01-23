@@ -1,33 +1,35 @@
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-//  
-//      Milok Zbrozek InputBox Class
-//      milokz@gmail.com
-//      Last Modified: 29.12.2022
-//          +Parent Control
-//
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////
+//////////////////////////////////////////
+//                                      //
+//      Milok Zbrozek InputBox Class    //
+//      milokz@gmail.com                //
+//      Last Modified: 23.01.2024       //
+//          +Parent Control             //
+//                                      //
+//////////////////////////////////////////
+//////////////////////////////////////////
 
 using System.IO;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Drawing;
 
 namespace System.Windows.Forms
 {
     public class InputBox
     {
-        public static string pOk_Text = "OK";
-        public static string pCancel_Text = "Cancel";
-        public static string pOk_Yes = "Yes";
-        public static string pOk_No = "No";
-        public static string pOk_Abort = "Ïðåðâàòü";
-        public static string pOk_Retry = "Ïîâòîð";
-        public static string pOk_Ignore = "Ïðîïóñê";
-        public static bool pShowInTaskBar = false;
-        public static int defWidth = 300;
+        public static string pOk_Text { get; set; } = "OK";
+        public static string pCancel_Text { get; set; } = "Cancel";
+        public static string pOk_Yes { get; set; } = "Yes";
+        public static string pOk_No { get; set; } = "No";
+        public static string pOk_Abortv = "ÐŸÑ€ÐµÑ€Ð²Ð°Ñ‚ÑŒ";
+        public static string pOk_Retry { get; set; } = "ÐŸÐ¾Ð²Ñ‚Ð¾Ñ€";
+        public static string pOk_Ignore { get; set; } = "ÐŸÑ€Ð¾Ð¿ÑƒÑÐº";
+        public static bool pShowInTaskBar { get; set; } = false;
+        public static bool pStayOnTop { get; set; } = false;
+        public static int defWidth { get; set; } = 300;
+        public static int defHeight { get; set; } = 0;        
 
         private string _title;
         private string _promptText;
@@ -244,7 +246,6 @@ namespace System.Windows.Forms
         private DialogResult ShowNumericBoxed(ref int val, int min, int max, Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             NumericUpDown digitBox = new NumericUpDown();
             Button buttonOk = new Button();
@@ -307,7 +308,6 @@ namespace System.Windows.Forms
         private DialogResult ShowMaskedTextBoxed(Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             MaskedTextBox textBox = new MaskedTextBox();
             Button buttonOk = new Button();
@@ -375,7 +375,6 @@ namespace System.Windows.Forms
         private DialogResult ShowMultiline(Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             TextBox textBox = new TextBox();
             Button buttonOk = new Button();
@@ -403,7 +402,7 @@ namespace System.Windows.Forms
             buttonCancel.DialogResult = DialogResult.Cancel;
 
             label.SetBounds(9, 20, defWidth - 24, 13);
-            textBox.SetBounds(12, 36, defWidth - 24, 200);
+            textBox.SetBounds(12, 36, defWidth - 24, defHeight > 0 ? defHeight - 20 : 200);
             buttonOk.SetBounds(defWidth - 168, 252, 75, 23);
             buttonCancel.SetBounds(defWidth - 87, 252, 75, 23);
             picture.SetBounds(12, 252, 22, 22);
@@ -422,6 +421,7 @@ namespace System.Windows.Forms
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+            if (defHeight > 0) form.Height = defWidth;
 
             if (parent != null)
             {
@@ -443,7 +443,6 @@ namespace System.Windows.Forms
         private DialogResult ShowRegex(string testerText, bool allow_new, string test, Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             Label labed = new Label();
             TextBox textBox = new TextBox();
@@ -577,7 +576,6 @@ namespace System.Windows.Forms
         private DialogResult ShowComboBoxed(Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             ComboBox comboBox = new ComboBox();
             Button buttonOk = new Button();
@@ -660,7 +658,6 @@ namespace System.Windows.Forms
         private DialogResult ShowSelectDir(Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             MaskedTextBox textBox = new MaskedTextBox();
             Button buttonOk = new Button();
@@ -728,11 +725,10 @@ namespace System.Windows.Forms
             _values[0] = textBox.Text;
             return _result;
         }
-        
+
         private DialogResult ShowSelectFile(string filter, Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             MaskedTextBox textBox = new MaskedTextBox();
             Button buttonOk = new Button();
@@ -808,7 +804,6 @@ namespace System.Windows.Forms
         private DialogResult ShowSelectColor(ref Color color, Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             MaskedTextBox textBox = new MaskedTextBox();
             Button buttonOk = new Button();
@@ -1130,7 +1125,6 @@ namespace System.Windows.Forms
         private DialogResult ShowPass(Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             MaskedTextBox textBox = new MaskedTextBox();
             Button buttonOk = new Button();
@@ -1214,7 +1208,6 @@ namespace System.Windows.Forms
         public static DialogResult QueryDateTime(string title, string promptText, string format, ref DateTime value, Control parent = null)
         {
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label label = new Label();
             DateTimePicker dtBox = new DateTimePicker();
             Button buttonOk = new Button();
@@ -1351,7 +1344,7 @@ namespace System.Windows.Forms
             InputBox ib = new InputBox(title, promptText, options);
             ib.ReadOnly = !allowNewValue;
             ib.Value = selectedValue;
-            DialogResult dr = ib.ShowRegex(testerText, true, "",parent);
+            DialogResult dr = ib.ShowRegex(testerText, true, "", parent);
             selectedValue = ib.Value;
             return dr;
         }
@@ -1373,7 +1366,6 @@ namespace System.Windows.Forms
                 return DialogResult.None;
 
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label[] labels = new Label[prompts.Length];
             MaskedTextBox[] textBoxes = new MaskedTextBox[values.Length];
             Button buttonOk = new Button();
@@ -1460,7 +1452,6 @@ namespace System.Windows.Forms
                 return DialogResult.None;
 
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label[] labels = new Label[prompts.Length];
             MaskedTextBox[] textBoxes = new MaskedTextBox[values.Length];
             int btnCount = 1;
@@ -1580,7 +1571,6 @@ namespace System.Windows.Forms
                 return DialogResult.None;
 
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label[] labels = new Label[prompts.Length];
             NumericUpDown[] textBoxes = new NumericUpDown[values.Length];
             Button buttonOk = new Button();
@@ -1673,7 +1663,6 @@ namespace System.Windows.Forms
             qm_d_mima[1] = maxValue;
 
             Form form = new InputBoxForm();
-            form.ShowInTaskbar = pShowInTaskBar;
             Label[] labels = new Label[prompts.Length];
             MaskedTextBox[] textBoxes = new MaskedTextBox[values.Length];
             Button buttonOk = new Button();
@@ -1883,7 +1872,7 @@ namespace System.Windows.Forms
         public static DialogResult Show(string title, string promptText, ref int value, Control parent = null)
         {
             InputBox ib = new InputBox(title, promptText, value.ToString());
-            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue,parent);
+            DialogResult dr = ib.ShowNumericBoxed(ref value, int.MinValue, int.MaxValue, parent);
             value = int.Parse(ib.Value);
             return dr;
 
@@ -2863,7 +2852,6 @@ namespace System.Windows.Forms
         {
             Form form = closeButton ? new Form() : new InputBoxForm();
             form.DialogResult = DialogResult.Cancel;
-            form.ShowInTaskbar = pShowInTaskBar;
             form.Text = title;
             form.ClientSize = new Size(defWidth, 107);
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -3082,6 +3070,8 @@ namespace System.Windows.Forms
         {
             get
             {
+                this.TopMost = InputBox.pStayOnTop;
+                this.ShowInTaskbar = InputBox.pShowInTaskBar;
                 CreateParams myCp = base.CreateParams;
                 myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
                 return myCp;
